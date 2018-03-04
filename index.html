@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Retro Timer</title>
+<style>
+  body, div, h1, h2 {
+    padding: 0;
+    margin: 0;
+  }
+
+  .outer {
+    display: table;
+    position: absolute;
+    height: 100%;
+    width: 100%;
+  }
+
+  .middle {
+    display: table-cell;
+    vertical-align: middle;
+  }
+
+  #watch {
+    text-align: center;
+    margin-left: auto;
+    margin-right: auto;
+    width: 600px;
+
+  }
+
+  #text {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    padding-right: 50px;
+    padding-bottom: 50px;
+  }
+
+  #text h1 {
+    color: #c1cbe4;
+    font-size: 9em;
+    text-align: right;
+  }
+
+  #text h2 {
+    color: #d3d5dc;
+    font-size: 2em;
+    text-align: right;
+  }
+</style>
+</head>
+<body>
+  <div class="outer">
+  <div class="middle">
+    <div id="watch">
+      <canvas id="timerCanvas" width="600" height="600"></canvas>
+    </div>
+    <div id="text">
+      <h1 id="lblDuration">Retro Timer</h1>
+      <h2>Enter value in seconds. Press 'Enter' to start.</h2>
+    </div>
+    <!-- <div id="help"></div> -->
+  </div>
+</div>
+
+  <script type="text/javascript">
+
+  var StopwatchUI = function(canvasElement) {
+    this.canvasElement = canvasElement;
+    this.ctx = canvasElement.getContext("2d");
+  }
+
+  StopwatchUI.prototype.clear = function() {
+    var canvas = this.canvasElement;
+    var ctx = this.ctx;
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+  }
+
+  StopwatchUI.prototype.draw = function(durationInSeconds, percentage) {
+    var canvas = this.canvasElement;
+    var ctx = this.ctx;
+
+    this.clear();
+
+    var centerX = canvas.width/2;
+    var centerY = canvas.height/2;
+
+    ctx.font = "4em Verdana";
+    ctx.fillStyle = "#3f4c6b";
+    ctx.textAlign="center";
+    ctx.textBaseline = "middle";
+
+    if(durationInSeconds > 0) {
+      var durationText = "";
+      if(durationInSeconds >= 60) {
+        var minutes = Math.floor(durationInSeconds/60);
+        if(minutes < 10) {
+          durationText = "0";
+        }
+        durationText += minutes + ":";
+      }
+
+      if(durationInSeconds%60<10) {
+        durationText += "0";
+      }
+
+      durationText += durationInSeconds%60;
+
+      ctx.fillText(durationText, centerX, centerY);
+    }
+
+    var rad = percentage/100 * 2;
+    console.log(rad);
+
+    ctx.beginPath();
+    ctx.arc(centerX,centerY,canvas.height/2-30,1.5*Math.PI, (rad - 0.49999)*Math.PI);
+    ctx.lineWidth = 14;
+    ctx.strokeStyle = "#3f4c6b";
+    ctx.stroke();
+  }
+
+  var Stopwatch = function(stopwatchUI) {
+    this.stopwatchUI = stopwatchUI;
+
+    this.durationInSeconds = 0;
+    this.initialDuration = 0;
+    this.interval = null;
+  }
+
+  Stopwatch.prototype.start = function(duration) {
+    if(isNaN(duration) || duration <= 0) {
+      throw "Illegal value for 'duration': " + duration;
+    }
+
+    this.durationInSeconds = this.initialDuration = parseInt(duration);
+    this.stopwatchUI.draw(this.durationInSeconds, 100);
+    var self = this;
+    this.interval = setInterval(function() {
+      self._onInterval();
+    } , 1000);
+  };
+
+  Stopwatch.prototype._onInterval = function() {
+    if(this.durationInSeconds > 0) {
+      console.log("running..." + this.durationInSeconds);
+      this.durationInSeconds--;
+      var percentage = this.durationInSeconds/this.initialDuration * 100;
+      this.stopwatchUI.draw(this.durationInSeconds, percentage);
+    } else {
+      this.pause();
+    }
+  }
+
+  Stopwatch.prototype.stop = function() {
+    if(this.interval != null) {
+      clearInterval(this.interval);
+      this.interval = null;
+      this.stopwatchUI.clear();
+    }
+  }
+
+  Stopwatch.prototype.isRunning = function() {
+    return this.interval != null;
+  }
+
+  var App = (function(Stopwatch, StopwatchUI) {
+
+    var duration = null;
+    var lblDurationElement = document.getElementById("lblDuration");
+    var timerCanvasElement = document.getElementById("timerCanvas");
+
+    var stopwatchUI = new StopwatchUI(timerCanvasElement);
+    var stopwatch = new Stopwatch(stopwatchUI);
+
+    var _onKeyUp = function(event) {
+      var key = event.key;
+      if(!isNaN(key)) {
+        duration = duration != null ? duration : "";
+        duration += key;
+      }
+
+      if(key === "Backspace") {
+        duration = "";
+        if(stopwatch.isRunning()) {
+          stopwatch.stop();
+        }
+      }
+
+      if(key === "Enter" && !stopwatch.isRunning() && duration !== null && duration > 0) {
+        stopwatch.start(duration);
+        duration = "";
+      }
+
+      if(duration !== null) {
+        lblDurationElement.innerHTML = duration;
+      }
+      console.log("pressed", event.key);
+
+    }
+
+    console.log("initializing retro timer...");
+
+    console.log("attaching key listener...");
+    document.body.addEventListener("keyup", _onKeyUp);
+
+    return {};
+  })(Stopwatch, StopwatchUI);
+
+  </script>
+
+</body>
+</html>
