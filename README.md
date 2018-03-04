@@ -2,10 +2,10 @@
 Simple single page application with a timer useful for agile retrospectives.
 
 ## How to use it?
-* Press 'h' to show help window.
 * If the timer is not running you can enter the duration in seconds just by typing in numbers.
-* By pressing 'Enter' you can start/ pause the timer.
+* By pressing 'Enter' you can start the timer.
 * You can reset the timer with 'Backspace'.
+* Press 'h' to show help window. (coming soon)
 
 ## Why another web timer application?
 You may ask why I've built such an app by myself while there are a few alternatives out there. One reason is that I like programming and building stuff but the more important reason is that it turns out that it is very hard to find a free alternative where the team can focus on its task and not getting distracted by features or ad banners.
