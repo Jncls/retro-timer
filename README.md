@@ -1,6 +1,9 @@
 # retro-timer
 Simple single page application with a timer useful for agile retrospectives.
 
+Check it out here:
+https://jncls.github.io/retro-timer/
+
 ## How to use it?
 * If the timer is not running you can enter the duration in seconds just by typing in numbers.
 * By pressing 'Enter' you can start the timer.
