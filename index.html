@@ -45,7 +45,7 @@
 
   #text h2 {
     color: #d3d5dc;
-    font-size: 2em;
+    font-size: 1.4em;
     text-align: right;
   }
 </style>
@@ -58,7 +58,7 @@
     </div>
     <div id="text">
       <h1 id="lblDuration">Retro Timer</h1>
-      <h2>Enter value in seconds. Press 'Enter' to start.</h2>
+      <h2 id="instructions">Enter time in seconds - Start with 'Enter' - Reset the timer with 'Backspace'.</h2>
     </div>
     <!-- <div id="help"></div> -->
   </div>
@@ -125,7 +125,7 @@
 
     var zero = 1.5*Math.PI;
     var rad = 2*Math.PI*ratio;
-    var color = 360 * ratio;    
+    var color = 360 * ratio;
 
     ctx.beginPath();
     ctx.arc(centerX,centerY,canvas.height/2-30,zero, zero+rad);
@@ -203,6 +203,7 @@
     var duration = null;
     var lblDurationElement = document.getElementById("lblDuration");
     var timerCanvasElement = document.getElementById("timerCanvas");
+    var instructionsElement = document.getElementById("instructions");
 
     var stopwatchUI = new StopwatchUI(timerCanvasElement);
     var stopwatch = new Stopwatch(stopwatchUI);
@@ -228,6 +229,7 @@
       if(key === "Enter" && !stopwatch.isRunning() && duration !== null && duration > 0) {
         stopwatch.start(duration, _reset);
         duration = "";
+        instructionsElement.innerHTML = "";
       }
 
       if(duration !== null) {
